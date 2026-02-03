@@ -8,6 +8,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build:web": "expo export --platform web",
+    "serve": "npx expo serve --port 5000",
+    "dev": "npm run build:web && npm run serve",
     "lint": "expo lint"
   },
   "dependencies": {
