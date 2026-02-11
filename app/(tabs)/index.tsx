@@ -1,98 +1,130 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { View, Text, TouchableOpacity, Alert, Platform, Image } from "react-native";
+import { useRouter, Stack } from "expo-router";
+import { useAuth } from '@/context/AuthContext';
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from "@/constants/theme";
+import * as DocumentPicker from 'expo-document-picker';
+import { storageService, RecordingMetadata } from '@/services/storage';
+import { uploadService } from '@/services/uploader';
+import { useState } from "react";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { user } = useAuth();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const handleAction = (action: 'record' | 'upload') => {
+    if (!user) {
+        if (Platform.OS !== 'web') {
+            // ToastAndroid.show("Please sign in to continue", ToastAndroid.SHORT);
+             Alert.alert("Authentication Required", "Please sign in to continue");
+        } else {
+             alert("Please sign in to continue");
+        }
+        router.push('/(tabs)/profile');
+        return;
+    }
+
+    if (action === 'record') {
+        router.push("/record");
+    } else {
+        handleFileUpload();
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (isPickerOpen) return;
+    setIsPickerOpen(true);
+
+    try {
+        const result = await DocumentPicker.getDocumentAsync({
+            type: ['audio/*', 'video/mp4', 'audio/mpeg', 'audio/wav', 'audio/x-m4a'],
+            copyToCacheDirectory: true,
+        });
+
+        if (result.canceled) {
+            setIsPickerOpen(false);
+            return;
+        }
+
+        const { uri, size, name } = result.assets[0];
+
+        // Create Metadata
+        const timestamp = Date.now();
+        const id = timestamp.toString();
+        const metadata: Omit<RecordingMetadata, 'uri' | 'uploadStatus'> = {
+            id,
+            durationMillis: 0, // Unknown for uploaded files initially
+            timestamp,
+            jobId: `UPLOAD-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.floor(Math.random() * 1000)}`,
+            meetingType: 'Upload',
+            participants: [{ role: 'Source', name: 'Uploaded File' }],
+            consentGiven: true, 
+        };
+
+        // 1. Save to local storage
+        const savedRecord = await storageService.saveRecording(uri, metadata);
+
+        // 2. Trigger Upload
+        uploadService.uploadRecording(savedRecord).catch(err => {
+            console.error("Upload trigger failed:", err);
+        });
+
+        Alert.alert("File Added", "Your audio file has been queued for processing.");
+
+    } catch (err) {
+        console.error('File selection error:', err);
+        Alert.alert("Error", "Failed to select file.");
+    } finally {
+        setIsPickerOpen(false);
+    }
+  };
+
+  return (
+    <View className="flex-1 bg-background">
+      <StatusBar style="light" />
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      {/* Header Removed - moved to _layout */}
+
+      {/* Main Content - Centered Buttons */}
+      <View className="flex-1 items-center justify-center px-6 pb-20">
+          
+          <View className="items-center mb-12">
+               <Text className="text-2xl font-bold text-foreground text-center mb-3">
+                   AI-Powered Field Notes & Action Item System
+               </Text>
+               <Text className="text-muted-foreground text-center max-w-[320px] leading-6">
+                   Capturing live, in-person conversations in the field to create clean, structured, and legally defensible meeting notes.
+               </Text>
+          </View>
+
+          {/* Record Button */}
+          <TouchableOpacity 
+            onPress={() => handleAction('record')}
+            activeOpacity={0.8}
+            className="items-center justify-center mb-8"
+          >
+              <View className="w-48 h-48 rounded-full bg-primary/20 items-center justify-center border border-primary/30">
+                  <View className="w-40 h-40 rounded-full bg-primary items-center justify-center shadow-lg shadow-primary/50">
+                      <Ionicons name="mic" size={64} color="white" />
+                  </View>
+              </View>
+              <Text className="text-foreground font-semibold text-lg mt-4">Start Recording</Text>
+          </TouchableOpacity>
+
+          {/* Upload Button */}
+          <TouchableOpacity 
+            onPress={() => handleAction('upload')}
+            className="flex-row items-center bg-secondary px-6 py-3 rounded-full border border-border"
+          >
+              <Ionicons name="cloud-upload-outline" size={20} color={theme.colors.onSurfaceVariant} />
+              <Text className="text-foreground font-medium ml-2">Upload Audio File</Text>
+          </TouchableOpacity>
+
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

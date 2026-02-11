@@ -32,8 +32,8 @@ export interface RecordingMetadata {
             confidence: number;
         }[];
         actionItems: {
-            pm: string[];
-            otherParties: string[];
+            pm: (string | { title: string; ownerName?: string; dueDate?: string })[];
+            otherParties: (string | { title: string; ownerName?: string; dueDate?: string })[];
         };
         quality?: {
             transcriptionConfidence: number;
@@ -52,6 +52,12 @@ export interface RecordingMetadata {
         timestamp: number;
         approver?: string;
     };
+    history?: {
+        timestamp: number;
+        version: number;
+        summary: string;
+        editor: string;
+    }[];
 }
 
 const METADATA_KEY = 'recordings_metadata';

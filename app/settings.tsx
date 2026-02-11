@@ -32,7 +32,7 @@ export default function SettingsScreen() {
                             className="bg-input text-foreground p-3 rounded-xl border border-border mb-2"
                             placeholder="https://your-n8n-instance.com/webhook/..."
                             placeholderTextColor={theme.colors.onSurfaceVariant}
-                            value="https://n8n.srv1116545.hstgr.cloud/webhook/..."
+                            value="https://n8n.srv1234562.hstgr.cloud/webhook/..."
                             editable={false}
                         />
                          <Text className="text-muted-foreground text-xs italic">

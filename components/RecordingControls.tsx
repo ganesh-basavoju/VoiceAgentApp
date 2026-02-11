@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+
+import React, { useEffect, useState, useRef } from 'react';
+import { View, TouchableOpacity, Animated, Easing, Platform } from 'react-native';
 import { Text } from 'react-native-paper';
 import { audioRecorderService } from '../services/audioRecorder';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../constants/theme';
+import { theme, Colors } from '../constants/theme';
 
 interface RecordingControlsProps {
     onStop: (uri: string) => void;
@@ -11,6 +12,7 @@ interface RecordingControlsProps {
 
 export function RecordingControls({ onStop }: RecordingControlsProps) {
     const [durationMillis, setDurationMillis] = useState(0);
+    const pulseAnim = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
         const start = async () => {
@@ -32,6 +34,24 @@ export function RecordingControls({ onStop }: RecordingControlsProps) {
         const interval = setInterval(() => {
             setDurationMillis(d => d + 1000);
         }, 1000);
+
+        // Pulse Animation
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.2,
+                    duration: 1000,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
 
         return () => clearInterval(interval);
     }, []);
@@ -62,31 +82,56 @@ export function RecordingControls({ onStop }: RecordingControlsProps) {
 
     return (
         <View className="flex-1 bg-background justify-center items-center">
-            {/* Pulsing Effect Container (Static Mock) */}
-            <View className="items-center mb-16">
-                 <View className="w-64 h-64 rounded-full bg-accent/10 items-center justify-center border border-accent/20 shadow-lg shadow-accent/20">
-                    <View className="w-56 h-56 rounded-full bg-accent/20 items-center justify-center border border-accent/30">
-                        <Text className="text-6xl font-black text-foreground tracking-widest tabular-nums">
+            
+            {/* Timer & Animation Section */}
+            <View className="items-center mb-20">
+                 {/* Pulsing Circles */}
+                 <View className="items-center justify-center relative">
+                    <Animated.View 
+                        style={{
+                            transform: [{ scale: pulseAnim }],
+                            opacity: 0.2,
+                        }}
+                        className="absolute w-72 h-72 rounded-full bg-primary"
+                    />
+                    <Animated.View 
+                        style={{
+                            transform: [{ scale: pulseAnim }],
+                            opacity: 0.4,
+                        }}
+                        className="absolute w-60 h-60 rounded-full bg-primary"
+                    />
+                    
+                    {/* Main Circle */}
+                    <View className="w-52 h-52 rounded-full bg-surface border-4 border-primary items-center justify-center shadow-2xl shadow-primary/50">
+                        <Text className="text-5xl font-black text-foreground tracking-widest tabular-nums font-mono">
                             {formatDuration(durationMillis)}
                         </Text>
-                         <View className="flex-row items-center mt-2 opacity-80">
-                            <View className="w-2 h-2 rounded-full bg-destructive mr-2" />
-                            <Text className="text-destructive font-bold uppercase tracking-[2px] text-xs">Recording</Text>
+                         <View className="flex-row items-center mt-3 bg-destructive/10 px-3 py-1 rounded-full">
+                            <View className="w-2 h-2 rounded-full bg-destructive mr-2 animate-pulse" />
+                            <Text className="text-destructive font-bold uppercase tracking-[2px] text-[10px]">Recording</Text>
                          </View>
                     </View>
                  </View>
             </View>
             
+            {/* Stop Button */}
             <TouchableOpacity 
                 activeOpacity={0.8}
                 onPress={handleStop}
-                className="bg-destructive w-full max-w-[280px] py-4 rounded-2xl items-center shadow-md shadow-destructive/40"
+                className="bg-destructive w-full max-w-[280px] py-5 rounded-2xl items-center shadow-lg shadow-destructive/40 border border-red-400"
             >
                 <View className="flex-row items-center">
-                    <Ionicons name="stop" size={24} color="white" />
-                    <Text className="text-white font-bold text-lg ml-3 tracking-[2px] uppercase">Stop Session</Text>
+                    <View className="bg-white/20 p-2 rounded-lg mr-3">
+                        <Ionicons name="stop" size={24} color="white" />
+                    </View>
+                    <Text className="text-white font-bold text-xl tracking-[2px] uppercase">Stop Session</Text>
                 </View>
             </TouchableOpacity>
+
+            <Text className="text-muted-foreground text-xs mt-6 opacity-60">
+                Tap to stop and save recording
+            </Text>
         </View>
     );
 }

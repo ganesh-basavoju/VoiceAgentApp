@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { RecordingMetadata, storageService } from './storage';
 
 // Production Webhook URL
-const N8N_WEBHOOK_URL = 'https://n8n.srv1116545.hstgr.cloud/webhook/56de15fe-5286-4bda-880a-e67c5aa87aa4';
+const N8N_WEBHOOK_URL = 'https://n8n.srv1234562.hstgr.cloud/webhook/56de15fe-5286-4bda-880a-e67c5aa87aa4';
 
 export class UploadService {
 

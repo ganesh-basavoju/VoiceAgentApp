@@ -56,17 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isLoading) return;
-
-    const inAuthGroup = segments[0] === 'auth';
+    // We no longer strictly redirect based on segments here.
+    // Navigation is now handled by the individual screens (e.g. Profile tab for auth).
     
-    if (!user && !inAuthGroup) {
-      // Redirect to the sign-in page.
-      router.replace('/auth/sign-in');
-    } else if (user && inAuthGroup) {
-      // Redirect back to the home page.
-      router.replace('/');
-    }
+    // However, if we're in the (tabs) group and not logged in, we might want to ensure
+    // we don't show protected data. But the requirement is to allow seeing the tabs.
+    // So we just let the router do its thing.
   }, [user, segments, isLoading]);
 
   const signIn = async (userData: any, token: string) => {

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Share, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Share, TextInput, Alert, ActivityIndicator, Modal, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { RecordingMetadata, storageService } from '../../services/storage';
@@ -17,6 +17,12 @@ export default function RecordingDetails() {
     const [isEditing, setIsEditing] = useState(false);
     const [editedAnalysis, setEditedAnalysis] = useState<RecordingMetadata['analysis'] | null>(null);
     const [saving, setSaving] = useState(false);
+    
+    // Menu State
+    const [menuVisible, setMenuVisible] = useState(false);
+    
+    // History State
+    const [historyVisible, setHistoryVisible] = useState(false);
 
     useEffect(() => {
         loadRecording();
@@ -68,8 +74,29 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
         
         setSaving(true);
         try {
+            // Increment Version
+            const currentVersion = editedAnalysis.editedSummary.version || 1;
+            const newAnalysis = {
+                ...editedAnalysis,
+                editedSummary: {
+                    ...editedAnalysis.editedSummary,
+                    version: currentVersion + 1
+                }
+            };
+
+            // Create history entry
+            const historyEntry = {
+                timestamp: Date.now(),
+                version: currentVersion,
+                summary: recording.analysis?.editedSummary?.text || '',
+                editor: 'User', // Could be dynamic if we had user info
+            };
+            
+            const newHistory = [...(recording.history || []), historyEntry];
+
             const updates: Partial<RecordingMetadata> = {
-                analysis: editedAnalysis
+                analysis: newAnalysis,
+                history: newHistory
             };
 
             if (approve) {
@@ -186,16 +213,9 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                     <Text className="text-lg font-bold text-foreground">{recording.jobId}</Text>
                     {approval?.status === 'approved' && <Text className="text-[10px] text-success font-bold uppercase mt-0.5">Approved</Text>}
                 </View>
-                <View className="flex-row gap-2">
-                    {!isEditing && (
-                        <TouchableOpacity onPress={handleShare} className="p-2 rounded-full active:bg-secondary">
-                            <Ionicons name="share-social-outline" size={24} color={Colors.accent} />
-                        </TouchableOpacity>
-                    )}
-                    <TouchableOpacity onPress={toggleEdit} className={`p-2 -mr-2 rounded-full ${isEditing ? 'bg-secondary' : 'active:bg-secondary'}`}>
-                        <Ionicons name={isEditing ? "close-outline" : "create-outline"} size={24} color={Colors.accent} />
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity onPress={() => setMenuVisible(true)} className="p-2 -mr-2 rounded-full active:bg-secondary">
+                    <Ionicons name="ellipsis-vertical" size={24} color={Colors.accent} />
+                </TouchableOpacity>
              </View>
 
              {!analysis ? (
@@ -222,7 +242,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                             >
                                 <Text className={`text-sm font-semibold capitalize ${
                                     activeTab === tab 
-                                    ? 'text-primary-foreground' 
+                                    ? 'text-white' 
                                     : 'text-muted-foreground'
                                 }`}>
                                     {tab}
@@ -234,7 +254,15 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                     <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingBottom: 100 }}>
                         {activeTab === 'summary' && (
                             <View className="mt-2">
-                                <Text className="text-primary text-xs font-bold uppercase tracking-widest mb-3">Executive Summary</Text>
+                                <View className="flex-row items-center justify-between mb-3">
+                                    <Text className="text-primary text-xs font-bold uppercase tracking-widest">Executive Summary</Text>
+                                    <View className="bg-secondary px-2 py-1 rounded-md border border-border">
+                                        <Text className="text-xs text-muted-foreground font-mono">
+                                            v{displayAnalysis?.editedSummary?.version || 1}
+                                            {isEditing ? ' (Editing)' : ''}
+                                        </Text>
+                                    </View>
+                                </View>
                                 <View className="bg-card p-5 rounded-2xl border border-border shadow-sm">
                                     {isEditing ? (
                                         <TextInput 
@@ -274,7 +302,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                                 {isEditing ? (
                                                     <View className="flex-1 flex-row gap-2">
                                                         <TextInput 
-                                                            value={String(item)}
+                                                            value={typeof item === 'object' ? item.title : String(item)}
                                                             onChangeText={(text) => updateActionItem('pm', i, text)}
                                                             className="flex-1 text-foreground text-sm leading-5 p-0"
                                                             multiline
@@ -284,7 +312,17 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                                         </TouchableOpacity>
                                                     </View>
                                                 ) : (
-                                                    <Text className="text-foreground flex-1 text-sm leading-5">{String(item)}</Text>
+                                                    <View className="flex-1">
+                                                        <Text className="text-foreground text-sm leading-5 font-semibold">
+                                                            {typeof item === 'object' ? item.title : String(item)}
+                                                        </Text>
+                                                        {typeof item === 'object' && (
+                                                            <View className="flex-row mt-1 gap-2">
+                                                                {item.ownerName && <Text className="text-xs text-muted-foreground">Owner: {item.ownerName}</Text>}
+                                                                {item.dueDate && <Text className="text-xs text-muted-foreground">Due: {item.dueDate}</Text>}
+                                                            </View>
+                                                        )}
+                                                    </View>
                                                 )}
                                             </View>
                                         ))
@@ -293,7 +331,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                     )}
                                 </View>
 
-                                 {/* Other Parties Items */}
+                 {/* Other Parties Items */}
                                  <View>
                                     <View className="flex-row items-center justify-between mb-3">
                                         <View className="flex-row items-center">
@@ -314,7 +352,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                                  {isEditing ? (
                                                     <View className="flex-1 flex-row gap-2">
                                                         <TextInput 
-                                                            value={String(item)}
+                                                            value={typeof item === 'object' ? item.title : String(item)}
                                                             onChangeText={(text) => updateActionItem('otherParties', i, text)}
                                                             className="flex-1 text-foreground text-sm leading-5 p-0"
                                                             multiline
@@ -324,7 +362,17 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                                         </TouchableOpacity>
                                                     </View>
                                                 ) : (
-                                                    <Text className="text-foreground flex-1 text-sm leading-5">{String(item)}</Text>
+                                                    <View className="flex-1">
+                                                        <Text className="text-foreground text-sm leading-5 font-semibold">
+                                                            {typeof item === 'object' ? item.title : String(item)}
+                                                        </Text>
+                                                        {typeof item === 'object' && (
+                                                            <View className="flex-row mt-1 gap-2">
+                                                                {item.ownerName && <Text className="text-xs text-muted-foreground">Owner: {item.ownerName}</Text>}
+                                                                {item.dueDate && <Text className="text-xs text-muted-foreground">Due: {item.dueDate}</Text>}
+                                                            </View>
+                                                        )}
+                                                    </View>
                                                 )}
                                             </View>
                                         ))
@@ -396,6 +444,113 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                     )}
                  </>
              )}
+            {/* Options Menu Modal */}
+            <Modal
+                transparent={true}
+                visible={menuVisible}
+                onRequestClose={() => setMenuVisible(false)}
+                animationType="fade"
+            >
+                <TouchableOpacity 
+                    className="flex-1" // Transparent backdrop
+                    activeOpacity={1} 
+                    onPress={() => setMenuVisible(false)}
+                >
+                    <View className="flex-1 relative">
+                         {/* Positioned Menu */}
+                        <View className="absolute top-14 right-6 w-56 bg-card rounded-xl border border-border shadow-xl overflow-hidden z-50">
+                                <TouchableOpacity 
+                                    onPress={() => { setMenuVisible(false); handleShare(); }}
+                                    className="flex-row items-center p-3 border-b border-border/50 active:bg-secondary"
+                                >
+                                    <Ionicons name="share-social-outline" size={20} color={Colors.text} style={{ marginRight: 10 }} />
+                                    <Text className="text-foreground text-sm font-medium">Share</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity 
+                                    onPress={() => { setMenuVisible(false); toggleEdit(); }}
+                                    className="flex-row items-center p-3 border-b border-border/50 active:bg-secondary"
+                                >
+                                    <Ionicons name="create-outline" size={20} color={Colors.text} style={{ marginRight: 10 }} />
+                                    <Text className="text-foreground text-sm font-medium">{isEditing ? 'Cancel Edit' : 'Edit Notes'}</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity 
+                                    onPress={() => { setMenuVisible(false); Alert.alert("Email", "Opening mail composer..."); }}
+                                    className="flex-row items-center p-3 border-b border-border/50 active:bg-secondary"
+                                >
+                                    <Ionicons name="mail-outline" size={20} color={Colors.text} style={{ marginRight: 10 }} />
+                                    <Text className="text-foreground text-sm font-medium">Send Email</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity 
+                                    onPress={() => { setMenuVisible(false); Alert.alert("Save", "Saving to Drive..."); }}
+                                    className="flex-row items-center p-3 border-b border-border/50 active:bg-secondary"
+                                >
+                                    <Ionicons name="cloud-download-outline" size={20} color={Colors.text} style={{ marginRight: 10 }} />
+                                    <Text className="text-foreground text-sm font-medium">Save to Drive</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity 
+                                    onPress={() => { setMenuVisible(false); setHistoryVisible(true); }}
+                                    className="flex-row items-center p-3 active:bg-secondary"
+                                >
+                                    <Ionicons name="time-outline" size={20} color={Colors.text} style={{ marginRight: 10 }} />
+                                    <Text className="text-foreground text-sm font-medium">View History</Text>
+                                </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+
+            {/* History Modal */}
+            <Modal
+                transparent={true}
+                visible={historyVisible}
+                onRequestClose={() => setHistoryVisible(false)}
+                animationType="slide"
+            >
+                <View className="flex-1 bg-black/50 justify-end">
+                    <View className="bg-background rounded-t-3xl h-[70%] border-t border-border shadow-2xl">
+                        <View className="flex-row items-center justify-between p-6 border-b border-border">
+                             <Text className="text-xl font-bold text-foreground">Version History</Text>
+                             <TouchableOpacity onPress={() => setHistoryVisible(false)} className="p-2 bg-secondary rounded-full">
+                                 <Ionicons name="close" size={24} color={Colors.text} />
+                             </TouchableOpacity>
+                        </View>
+                        
+                        <ScrollView className="flex-1 p-6">
+                            {(recording?.history && recording.history.length > 0) ? (
+                                recording.history.slice().reverse().map((item, index) => (
+                                    <View key={index} className="mb-6 border-l-2 border-border pl-4 ml-2">
+                                        <View className="flex-row items-center mb-2 -ml-[25px]">
+                                             <View className="w-4 h-4 rounded-full bg-primary border-2 border-background z-10" />
+                                             <Text className="text-xs text-muted-foreground ml-2 font-mono">
+                                                 {new Date(item.timestamp).toLocaleString()}
+                                             </Text>
+                                        </View>
+                                        
+                                        <View className="bg-card p-4 rounded-xl border border-border">
+                                            <View className="flex-row justify-between mb-2">
+                                                <Text className="text-primary font-bold text-xs uppercase tracking-wider">Version {item.version}</Text>
+                                                <Text className="text-muted-foreground text-xs">By {item.editor}</Text>
+                                            </View>
+                                            <Text className="text-foreground text-sm leading-6" numberOfLines={4}>
+                                                {item.summary}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))
+                            ) : (
+                                <View className="items-center justify-center py-10">
+                                    <Text className="text-muted-foreground">No history available yet.</Text>
+                                    <Text className="text-muted-foreground text-xs mt-2">Edits will appear here.</Text>
+                                </View>
+                            )}
+                        </ScrollView>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
