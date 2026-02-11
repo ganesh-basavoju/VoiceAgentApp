@@ -10,7 +10,7 @@ export default function SettingsScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-background">
-             <StatusBar style="dark" />
+             <StatusBar style="light" />
              <Stack.Screen options={{ headerShown: false }} />
 
              {/* Header */}

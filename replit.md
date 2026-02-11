@@ -42,5 +42,13 @@ The app is configured for static web deployment. The `dist/` folder contains the
 - Build command: `npm run build:web`
 - Serve static files from: `dist/`
 
+## Theme
+The app uses a dark purple-violet theme inspired by a futuristic UI reference:
+- **Color System**: Centralized in `constants/theme.ts` (Colors object) and `app/global.css` (CSS variables)
+- **Primary**: Deep Purple (#7C3AED), **Accent**: Electric Violet (#A855F7), **Background**: Dark Purple (#1E1B2E)
+- **Utilities**: `text-gradient`, `bg-glass`, `glow-purple`, `gradient-btn`, `gradient-card` defined in global.css
+- All screens use dark backgrounds with light text, purple inputs, and gradient buttons
+
 ## Recent Changes
+- 2026-02-11: Complete UI theme refactor to dark purple-violet gradient system (from luxury white+black)
 - 2026-02-03: Initial Replit environment setup, configured for web on port 5000

@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authService } from '../../services/auth';
-import { theme } from '../../constants/theme';
+import { theme, Colors } from '../../constants/theme';
 
 export default function SignUp() {
   const router = useRouter();
@@ -32,8 +32,7 @@ export default function SignUp() {
 
     try {
       await authService.signUp(fullName, email, password);
-      // Navigate to Sign In after successful registration (or home)
-      router.replace('/auth/sign-in'); // Asking them to sign in
+      router.replace('/auth/sign-in');
     } catch (err: any) {
       setError(err.message || 'Failed to create account. Please try again.');
     } finally {
@@ -42,8 +41,8 @@ export default function SignUp() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-background" style={{ flex: 1, backgroundColor: Colors.background }}>
+      <StatusBar style="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -62,7 +61,7 @@ export default function SignUp() {
           </View>
 
           <View className="w-full">
-            {error ? <Text className="text-destructive bg-destructive/10 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
+            {error ? <Text className="text-red-500 bg-red-500/10 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
 
             <View className="mb-5">
                 <Text className="text-foreground font-medium mb-2">Full Name</Text>
@@ -74,9 +73,9 @@ export default function SignUp() {
                 placeholderTextColor={theme.colors.onSurfaceVariant}
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }} 
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="account" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -93,9 +92,9 @@ export default function SignUp() {
                 keyboardType="email-address"
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="email" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -111,9 +110,9 @@ export default function SignUp() {
                 secureTextEntry
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="lock" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -129,9 +128,9 @@ export default function SignUp() {
                 secureTextEntry
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="lock-check" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -142,9 +141,10 @@ export default function SignUp() {
               loading={loading}
               disabled={loading}
               className="rounded-xl py-1 shadow-sm mt-4 mb-8"
-              buttonColor={theme.colors.primary}
-              textColor={theme.colors.onPrimary}
+              buttonColor={Colors.primary}
+              textColor={Colors.white}
               labelStyle={{ fontSize: 18, fontWeight: 'bold' }}
+              style={{ borderRadius: 16 }}
             >
               Sign Up
             </Button>
@@ -152,7 +152,7 @@ export default function SignUp() {
             <View className="flex-row justify-center mt-4">
               <Text className="text-muted-foreground text-base">Already have an account? </Text>
               <TouchableOpacity onPress={() => router.push('/auth/sign-in')}>
-                <Text className="text-primary text-base font-bold">Sign In</Text>
+                <Text className="text-accent text-base font-bold">Sign In</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -161,4 +161,3 @@ export default function SignUp() {
     </SafeAreaView>
   );
 }
-

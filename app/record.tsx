@@ -69,7 +69,7 @@ export default function RecordScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-background">
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             <Stack.Screen options={{ headerShown: false }} />
             
             {/* Custom Header for Back Navigation */}

@@ -4,7 +4,7 @@ import { View, Text, ScrollView, TouchableOpacity, Share, TextInput, Alert, Acti
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { RecordingMetadata, storageService } from '../../services/storage';
-import { theme } from '../../constants/theme';
+import { theme, Colors } from '../../constants/theme';
 import { StatusBar } from 'expo-status-bar';
 
 export default function RecordingDetails() {
@@ -174,7 +174,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
 
     return (
         <SafeAreaView className="flex-1 bg-background">
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             
             {/* Header */}
              <View className="flex-row items-center justify-between px-6 py-4 border-b border-border bg-background z-10">
@@ -189,11 +189,11 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                 <View className="flex-row gap-2">
                     {!isEditing && (
                         <TouchableOpacity onPress={handleShare} className="p-2 rounded-full active:bg-secondary">
-                            <Ionicons name="share-social-outline" size={24} color={theme.colors.primary} />
+                            <Ionicons name="share-social-outline" size={24} color={Colors.accent} />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity onPress={toggleEdit} className={`p-2 -mr-2 rounded-full ${isEditing ? 'bg-secondary' : 'active:bg-secondary'}`}>
-                        <Ionicons name={isEditing ? "close-outline" : "create-outline"} size={24} color={theme.colors.primary} />
+                        <Ionicons name={isEditing ? "close-outline" : "create-outline"} size={24} color={Colors.accent} />
                     </TouchableOpacity>
                 </View>
              </View>
@@ -201,7 +201,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
              {!analysis ? (
                  <View className="flex-1 justify-center items-center p-8">
                      <View className="w-20 h-20 rounded-full bg-secondary items-center justify-center mb-6 animate-pulse">
-                        <Ionicons name="cloud-upload-outline" size={40} color={theme.colors.primary} />
+                        <Ionicons name="cloud-upload-outline" size={40} color={Colors.accent} />
                      </View>
                      <Text className="text-xl font-bold text-foreground mb-2">Processing audio...</Text>
                      <Text className="text-muted-foreground text-center">The transcript and summary will appear here once the upload completes.</Text>
@@ -270,7 +270,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                     {displayAnalysis?.actionItems?.pm?.length ? (
                                         displayAnalysis.actionItems.pm.map((item, i) => (
                                             <View key={i} className="bg-card p-4 rounded-xl border border-border mb-2 flex-row gap-3 items-start">
-                                                <Ionicons name="square-outline" size={20} color={theme.colors.primary} style={{ marginTop: 2 }} />
+                                                <Ionicons name="square-outline" size={20} color={Colors.accent} style={{ marginTop: 2 }} />
                                                 {isEditing ? (
                                                     <View className="flex-1 flex-row gap-2">
                                                         <TextInput 
@@ -297,7 +297,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                  <View>
                                     <View className="flex-row items-center justify-between mb-3">
                                         <View className="flex-row items-center">
-                                            <View className="w-1 h-4 bg-secondary-foreground rounded-full mr-2" />
+                                            <View className="w-1 h-4 bg-accent rounded-full mr-2" />
                                             <Text className="text-foreground text-base font-bold">Other Parties</Text>
                                         </View>
                                         {isEditing && (
@@ -310,7 +310,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                     {displayAnalysis?.actionItems?.otherParties?.length ? (
                                         displayAnalysis.actionItems.otherParties.map((item, i) => (
                                             <View key={i} className="bg-card p-4 rounded-xl border border-border mb-2 flex-row gap-3 items-start">
-                                                <Ionicons name="people-outline" size={20} color={theme.colors.secondary} style={{ opacity: 0.7, marginTop: 2 }} />
+                                                <Ionicons name="people-outline" size={20} color={Colors.primaryLight} style={{ marginTop: 2 }} />
                                                  {isEditing ? (
                                                     <View className="flex-1 flex-row gap-2">
                                                         <TextInput 
@@ -320,7 +320,7 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                                                             multiline
                                                         />
                                                         <TouchableOpacity onPress={() => removeActionItem('otherParties', i)}>
-                                                             <Ionicons name="trash-outline" size={18} color={theme.colors.destructive} />
+                                                             <Ionicons name="trash-outline" size={18} color={theme.colors.error} />
                                                         </TouchableOpacity>
                                                     </View>
                                                 ) : (

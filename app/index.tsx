@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from "../constants/theme";
+import { theme, Colors } from "../constants/theme";
 import * as DocumentPicker from 'expo-document-picker';
 import { storageService, RecordingMetadata } from '../services/storage';
 
@@ -72,7 +72,7 @@ export default function Index() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" style={{ flex: 1 }}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack.Screen options={{ headerShown: false }} />
       
       {/* Header Section */}
@@ -106,8 +106,8 @@ export default function Index() {
         <FAB
             icon="cloud-upload"
             label="Upload File"
-            color={theme.colors.primary}
-            style={{ backgroundColor: theme.colors.secondary, borderRadius: 30 }}
+            color={Colors.primaryLight}
+            style={{ backgroundColor: Colors.secondary, borderRadius: 30, borderWidth: 1, borderColor: Colors.border }}
             uppercase={false}
             small
             onPress={handleFileUpload}
@@ -115,8 +115,8 @@ export default function Index() {
         <FAB
             icon="microphone"
             label="Record Note"
-            color={theme.colors.onPrimary}
-            style={{ backgroundColor: theme.colors.primary, borderRadius: 30 }}
+            color={Colors.white}
+            style={{ backgroundColor: Colors.primary, borderRadius: 30 }}
             uppercase={false}
             onPress={() => router.push("/record")}
         />

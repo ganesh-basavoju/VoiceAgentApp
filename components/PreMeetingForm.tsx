@@ -98,7 +98,7 @@ export function PreMeetingForm({ onSubmit }: PreMeetingFormProps) {
                  <View className="flex-row justify-between items-center mb-3">
                     <Text className="text-muted-foreground text-xs uppercase tracking-widest font-medium">Participants</Text>
                     <TouchableOpacity onPress={addParticipant}>
-                        <Text className="text-primary text-xs font-bold">+ ADD</Text>
+                        <Text className="text-accent text-xs font-bold">+ ADD</Text>
                     </TouchableOpacity>
                 </View>
                 
@@ -137,7 +137,7 @@ export function PreMeetingForm({ onSubmit }: PreMeetingFormProps) {
                 onPress={() => setConsentGiven(!consentGiven)}
                 className={`mb-8 p-4 rounded-xl border flex-row items-center ${
                     consentGiven 
-                    ? 'bg-success/10 border-success/50' 
+                    ? 'bg-success/10 border-success/30' 
                     : 'bg-card border-border'
                 }`}
             >
@@ -149,7 +149,7 @@ export function PreMeetingForm({ onSubmit }: PreMeetingFormProps) {
                     {consentGiven && <Ionicons name="checkmark" size={16} color="white" />}
                 </View>
                 <Text className={`flex-1 text-sm font-medium ${
-                    consentGiven ? 'text-emerald-800' : 'text-muted-foreground'
+                    consentGiven ? 'text-emerald-400' : 'text-muted-foreground'
                 }`}>
                     I confirm all parties have explicitly consented to being recorded for this session.
                 </Text>

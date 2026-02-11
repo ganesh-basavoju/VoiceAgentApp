@@ -4,33 +4,30 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 0%;
+        --background: 263 50% 12%;
+        --foreground: 260 10% 95%;
 
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 0%;
+        --card: 263 40% 18%;
+        --card-foreground: 260 10% 95%;
 
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 0%;
+        --popover: 263 40% 18%;
+        --popover-foreground: 260 10% 95%;
 
-        --primary: 0 0% 0%;
+        --primary: 265 80% 58%;
         --primary-foreground: 0 0% 100%;
-        --primary-hover: 0 0% 20%;
+        --primary-hover: 265 80% 50%;
 
-        --secondary: 0 0% 96%;
-        --secondary-foreground: 0 0% 0%;
-        /* Implicit based on context, usually black on light gray */
+        --secondary: 263 30% 25%;
+        --secondary-foreground: 260 10% 90%;
 
-        --muted: 0 0% 96%;
-        --muted-foreground: 0 0% 45%;
+        --muted: 263 30% 22%;
+        --muted-foreground: 260 15% 60%;
 
-        --accent: 0 0% 96%;
-        --accent-foreground: 0 0% 0%;
-        /* Implicit */
+        --accent: 272 80% 60%;
+        --accent-foreground: 0 0% 100%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
-        /* Usually white on red */
 
         --success: 142 70% 45%;
         --success-foreground: 0 0% 100%;
@@ -38,29 +35,61 @@
         --warning: 38 92% 50%;
         --warning-foreground: 0 0% 100%;
 
-        --border: 0 0% 92%;
-        --input: 0 0% 92%;
-        --ring: 0 0% 0%;
+        --border: 263 30% 28%;
+        --input: 263 35% 20%;
+        --ring: 265 80% 58%;
 
-        --radius: 0.5rem;
+        --radius: 0.75rem;
 
-        --sidebar-background: 0 0% 98%;
-        --sidebar-foreground: 0 0% 40%;
-        --sidebar-primary: 0 0% 0%;
-        --sidebar-border: 0 0% 92%;
-    }
-
-    .dark {
-        /* For now, mapping dark mode to the same luxury white theme as requested "Luxury White + Black" 
-       If a true dark mode is needed later, these would be inverted. 
-       The request implies a specific "Luxury White + Black" theme for the app, likely enforcing this look.
-       However, usually "foreground" is white in dark mode. 
-       Let's stick to the requested values as the "Base" theme. */
+        --sidebar-background: 263 40% 15%;
+        --sidebar-foreground: 260 15% 60%;
+        --sidebar-primary: 265 80% 58%;
+        --sidebar-border: 263 30% 28%;
     }
 }
 
 @layer utilities {
     .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400;
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-violet-400 to-fuchsia-400;
+    }
+
+    .bg-glass {
+        background: rgba(124, 58, 237, 0.12);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(167, 139, 250, 0.15);
+    }
+
+    .bg-glass-strong {
+        background: rgba(124, 58, 237, 0.2);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(167, 139, 250, 0.25);
+    }
+
+    .glow-purple {
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 40px rgba(124, 58, 237, 0.1);
+    }
+
+    .glow-purple-sm {
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.2), 0 0 20px rgba(124, 58, 237, 0.08);
+    }
+
+    .gradient-bg {
+        background: linear-gradient(135deg, hsl(263, 50%, 12%) 0%, hsl(270, 45%, 18%) 50%, hsl(280, 40%, 14%) 100%);
+    }
+
+    .gradient-card {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.08) 100%);
+        border: 1px solid rgba(167, 139, 250, 0.15);
+    }
+
+    .gradient-btn {
+        background: linear-gradient(135deg, hsl(265, 80%, 58%) 0%, hsl(280, 75%, 55%) 100%);
+    }
+
+    .gradient-btn-secondary {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.12) 100%);
+        border: 1px solid rgba(167, 139, 250, 0.2);
     }
 }

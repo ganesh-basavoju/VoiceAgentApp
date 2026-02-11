@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authService } from '../../services/auth';
-import { theme } from '../../constants/theme';
+import { theme, Colors } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function ForgotPassword() {
@@ -25,7 +25,6 @@ export default function ForgotPassword() {
 
     try {
       await authService.requestPasswordReset(email);
-      // Navigate to Reset Password screen, passing email as param if needed
       router.push({ pathname: '/auth/reset-password', params: { email } });
     } catch (err) {
       setError('Failed to send reset link. Please check the email provided.');
@@ -35,8 +34,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-background" style={{ flex: 1, backgroundColor: Colors.background }}>
+      <StatusBar style="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -50,7 +49,7 @@ export default function ForgotPassword() {
           </TouchableOpacity>
 
           <View className="items-center mb-10 mt-10">
-            <View className="w-16 h-16 rounded-full bg-primary/5 items-center justify-center mb-6 border border-primary/20">
+            <View className="w-16 h-16 rounded-full bg-primary/10 items-center justify-center mb-6 border border-primary/30">
                  <Text className="text-3xl font-bold text-primary">?</Text>
             </View>
             <Text className="text-3xl font-bold text-foreground mb-2 text-gradient">Forgot Password?</Text>
@@ -58,7 +57,7 @@ export default function ForgotPassword() {
           </View>
 
           <View className="w-full">
-            {error ? <Text className="text-destructive bg-destructive/10 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
+            {error ? <Text className="text-red-500 bg-red-500/10 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
 
             <View className="mb-6">
                 <Text className="text-foreground font-medium mb-2">Email Address</Text>
@@ -72,9 +71,9 @@ export default function ForgotPassword() {
                 keyboardType="email-address"
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }} 
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="email" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -85,9 +84,10 @@ export default function ForgotPassword() {
               loading={loading}
               disabled={loading}
               className="rounded-xl py-1 shadow-sm"
-              buttonColor={theme.colors.primary}
-              textColor={theme.colors.onPrimary}
+              buttonColor={Colors.primary}
+              textColor={Colors.white}
               labelStyle={{ fontSize: 18, fontWeight: 'bold' }}
+              style={{ borderRadius: 16 }}
             >
               Send Code
             </Button>
@@ -97,4 +97,3 @@ export default function ForgotPassword() {
     </SafeAreaView>
   );
 }
-

@@ -1,32 +1,69 @@
-import { MD3LightTheme as DefaultTheme } from 'react-native-paper';
+import { MD3DarkTheme as DefaultTheme } from 'react-native-paper';
+
+export const Colors = {
+    primary: '#7C3AED',
+    primaryLight: '#A78BFA',
+    primaryDark: '#6D28D9',
+    accent: '#A855F7',
+    accentGlow: '#9333EA',
+    secondary: '#2D2640',
+    secondaryLight: '#3D3555',
+    lavender: '#C4B5FD',
+    background: '#1E1B2E',
+    backgroundLight: '#2A2540',
+    surface: '#252040',
+    surfaceLight: '#302A4A',
+    text: '#F0ECF9',
+    textSecondary: '#9B8FC4',
+    textMuted: '#6B5E8A',
+    border: '#3D3560',
+    inputBg: '#2A2445',
+    error: '#EF4444',
+    success: '#22C55E',
+    warning: '#F59E0B',
+    white: '#FFFFFF',
+};
+
+export const Fonts = {
+    rounded: 'System',
+    mono: 'monospace',
+};
 
 export const theme = {
     ...DefaultTheme,
+    dark: true,
     colors: {
         ...DefaultTheme.colors,
-        // "Luxury White + Black" Theme
-        primary: 'hsl(0, 0%, 0%)',       // Strong Black
-        onPrimary: 'hsl(0, 0%, 100%)',   // White text on black
-        primaryContainer: 'hsl(0, 0%, 20%)', // Using hover/dark gray for container if needed, or stick to standards
-        onPrimaryContainer: 'hsl(0, 0%, 100%)',
+        primary: Colors.primary,
+        onPrimary: Colors.white,
+        primaryContainer: Colors.primaryDark,
+        onPrimaryContainer: Colors.white,
 
-        secondary: 'hsl(0, 0%, 96%)',    // Subtle Gray
-        onSecondary: 'hsl(0, 0%, 0%)',   // Black text
-        secondaryContainer: 'hsl(0, 0%, 90%)',
-        onSecondaryContainer: 'hsl(0, 0%, 0%)',
+        secondary: Colors.secondary,
+        onSecondary: Colors.text,
+        secondaryContainer: Colors.secondaryLight,
+        onSecondaryContainer: Colors.text,
 
-        background: 'hsl(0, 0%, 100%)',  // Plain White
-        onBackground: 'hsl(0, 0%, 0%)',  // Pure Black
+        background: Colors.background,
+        onBackground: Colors.text,
 
-        surface: 'hsl(0, 0%, 100%)',     // Cards are white
-        onSurface: 'hsl(0, 0%, 0%)',     // Card text is black
-        surfaceVariant: 'hsl(0, 0%, 96%)', // Muted/Subtle backgrounds
-        onSurfaceVariant: 'hsl(0, 0%, 45%)', // Muted foreground
+        surface: Colors.surface,
+        onSurface: Colors.text,
+        surfaceVariant: Colors.surfaceLight,
+        onSurfaceVariant: Colors.textSecondary,
 
-        error: 'hsl(0, 84%, 60%)',       // Destructive
-        onError: 'hsl(0, 0%, 100%)',
+        error: Colors.error,
+        onError: Colors.white,
 
-        outline: 'hsl(0, 0%, 92%)',      // Border color
-        outlineVariant: 'hsl(0, 0%, 96%)',
+        outline: Colors.border,
+        outlineVariant: Colors.secondary,
+
+        elevation: {
+            ...DefaultTheme.colors.elevation,
+            level0: Colors.background,
+            level1: Colors.surface,
+            level2: Colors.surfaceLight,
+            level3: Colors.secondaryLight,
+        },
     },
 };

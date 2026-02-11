@@ -5,7 +5,7 @@ import { RecordingMetadata, storageService } from '../services/storage';
 import { uploadService } from '../services/uploader';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { theme } from '../constants/theme';
+import { theme, Colors } from '../constants/theme';
 
     import { useFocusEffect } from 'expo-router';
     import { useCallback } from 'react';
@@ -41,7 +41,7 @@ import { theme } from '../constants/theme';
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'completed': return 'hsl(142, 70%, 45%)'; // Success
-            case 'uploading': return theme.colors.primary; // Primary (Black)
+            case 'uploading': return Colors.accent; // Accent purple
             case 'failed': return 'hsl(0, 84%, 60%)'; // Destructive
             default: return theme.colors.onSurfaceVariant; // Muted Foreground
         }

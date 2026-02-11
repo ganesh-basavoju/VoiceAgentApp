@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authService } from '../../services/auth';
-import { theme } from '../../constants/theme';
+import { theme, Colors } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 
 export default function SignIn() {
@@ -27,8 +27,6 @@ export default function SignIn() {
 
     try {
       const response = await authService.signIn(email, password);
-      // Assuming response contains user and token. Adjust based on actual authService return.
-      // If authService.signIn returns { user, token }
       await signIn(response.user, response.token);
       router.replace('/');
     } catch (err: any) {
@@ -39,8 +37,8 @@ export default function SignIn() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" style={{ flex: 1 }}>
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-background" style={{ flex: 1, backgroundColor: Colors.background }}>
+      <StatusBar style="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -59,7 +57,7 @@ export default function SignIn() {
           </View>
 
           <View className="w-full">
-            {error ? <Text className="text-red-500 bg-red-50 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
+            {error ? <Text className="text-red-500 bg-red-500/10 text-center p-2 rounded-lg mb-4 overflow-hidden">{error}</Text> : null}
 
             <View className="mb-5">
                 <Text className="text-foreground font-medium mb-2">Email Address</Text>
@@ -73,9 +71,9 @@ export default function SignIn() {
                 keyboardType="email-address"
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="email" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
@@ -91,16 +89,16 @@ export default function SignIn() {
                 secureTextEntry
                 className="bg-input"
                 style={{ backgroundColor: theme.colors.elevation.level1 }}
-                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 8 }}
+                outlineStyle={{ borderColor: theme.colors.outline, borderRadius: 12 }}
                 textColor={theme.colors.onSurface}
-                theme={{ colors: { primary: theme.colors.primary, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
+                theme={{ colors: { primary: Colors.accent, onSurfaceVariant: theme.colors.onSurfaceVariant } }}
                 left={<TextInput.Icon icon="lock" color={theme.colors.onSurfaceVariant} />}
                 />
             </View>
             
             <View className="flex-row justify-end mb-6">
                  <TouchableOpacity onPress={() => router.push('/auth/forgot-password')}>
-                    <Text className="text-primary font-medium">Forgot Password?</Text>
+                    <Text className="text-accent font-medium">Forgot Password?</Text>
                  </TouchableOpacity>
             </View>
 
@@ -110,9 +108,10 @@ export default function SignIn() {
               loading={loading}
               disabled={loading}
               className="rounded-xl py-1 shadow-sm mb-8"
-              buttonColor={theme.colors.primary}
-              textColor={theme.colors.onPrimary}
+              buttonColor={Colors.primary}
+              textColor={Colors.white}
               labelStyle={{ fontSize: 18, fontWeight: 'bold' }}
+              style={{ borderRadius: 16 }}
             >
               Sign In
             </Button>
@@ -120,7 +119,7 @@ export default function SignIn() {
             <View className="flex-row justify-center mt-4">
               <Text className="text-muted-foreground text-base">Don't have an account? </Text>
               <TouchableOpacity onPress={() => router.push('/auth/sign-up')}>
-                <Text className="text-primary text-base font-bold">Sign Up</Text>
+                <Text className="text-accent text-base font-bold">Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>

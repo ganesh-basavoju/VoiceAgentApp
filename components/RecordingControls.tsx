@@ -64,8 +64,8 @@ export function RecordingControls({ onStop }: RecordingControlsProps) {
         <View className="flex-1 bg-background justify-center items-center">
             {/* Pulsing Effect Container (Static Mock) */}
             <View className="items-center mb-16">
-                 <View className="w-64 h-64 rounded-full bg-destructive/10 items-center justify-center border border-destructive/20 shadow-lg shadow-destructive/20">
-                    <View className="w-56 h-56 rounded-full bg-destructive/20 items-center justify-center border border-destructive/30">
+                 <View className="w-64 h-64 rounded-full bg-accent/10 items-center justify-center border border-accent/20 shadow-lg shadow-accent/20">
+                    <View className="w-56 h-56 rounded-full bg-accent/20 items-center justify-center border border-accent/30">
                         <Text className="text-6xl font-black text-foreground tracking-widest tabular-nums">
                             {formatDuration(durationMillis)}
                         </Text>
