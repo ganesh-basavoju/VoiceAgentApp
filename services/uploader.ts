@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { RecordingMetadata, storageService } from './storage';
+import { jobsService } from './jobs';
 
 // Production Webhook URL
 const N8N_WEBHOOK_URL = 'https://n8n.srv1234562.hstgr.cloud/webhook/56de15fe-5286-4bda-880a-e67c5aa87aa4';
@@ -60,6 +61,20 @@ export class UploadService {
                 }
 
                 await storageService.updateStatus(metadata.id, 'completed', analysis);
+
+                // Sync to Backend for Smart Memory
+                // We construct the payload expected by backend/models/Meeting
+                const syncPayload = {
+                    summary: analysis.editedSummary?.text || analysis.summary || '',
+                    transcript: analysis.editedTranscript || analysis.rawTranscript || [],
+                    actionItems: analysis.actionItems || {},
+                    timestamp: metadata.timestamp,
+                    originalRecordingId: metadata.id
+                };
+
+                // Fire and forget sync (await but catch errors inside service so it doesn't block UI)
+                await jobsService.syncMeeting(metadata.jobId, syncPayload);
+
                 return true;
             } else {
                 const errorText = await uploadResponse.text();

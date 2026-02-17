@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "BigLogic AI",
+    "slug": "biglogic-ai-field-notes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "biglogicai",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biglogic.fieldnotes"
     },
     "android": {
+      "package": "com.biglogic.fieldnotes",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -44,6 +46,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ee7d8f63-9132-4b7f-bc90-35b7e218e89f"
+      }
     }
   }
 }

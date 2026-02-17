@@ -1,13 +1,48 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme, Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState, useCallback } from 'react';
+import { authService, UserProfile } from '@/services/auth';
 
 export default function ProfileScreen() {
     const { user, signOut } = useAuth();
     const router = useRouter();
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            loadProfile();
+        }
+    }, [user]);
+
+    const loadProfile = async () => {
+        setLoading(true);
+        try {
+            const data = await authService.getProfile();
+            setProfile(data);
+        } catch (error) {
+            console.error('Failed to load profile:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            const data = await authService.getProfile();
+            setProfile(data);
+        } catch (error) {
+            console.error('Failed to refresh profile:', error);
+        } finally {
+            setRefreshing(false);
+        }
+    }, []);
 
     if (!user) {
         return (
@@ -43,34 +78,46 @@ export default function ProfileScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-background" edges={['left', 'right']}>
-            <ScrollView className="flex-1 px-6">
+            <ScrollView 
+                className="flex-1 px-6"
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />
+                }
+            >
                 {/* Header */}
                 <View className="items-center py-8">
                     <View className="w-24 h-24 bg-secondary rounded-full items-center justify-center mb-4 border-2 border-primary relative">
                         <Text className="text-3xl font-bold text-primary">
-                            {user.firstName?.[0] || 'U'}
+                            {profile?.user.fullName?.[0] || user.fullName?.[0] || 'U'}
                         </Text>
                         <View className="absolute bottom-0 right-0 bg-primary w-8 h-8 rounded-full items-center justify-center border-2 border-background">
                              <Ionicons name="checkmark" size={16} color="white" />
                         </View>
                     </View>
                     <Text className="text-2xl font-bold text-foreground">
-                        {user.firstName ? `${user.firstName.toUpperCase()} ${user.lastName?.toUpperCase() || ''}` : 'USER'}
+                        {profile?.user.fullName || user.fullName || 'User'}
                     </Text>
-                    <Text className="text-muted-foreground">{user.company || 'Project Manager'}</Text>
+                    <Text className="text-muted-foreground">{profile?.user.role || 'Project Manager'}</Text>
+                    <Text className="text-xs text-muted-foreground/50">{profile?.user.email || user.email}</Text>
 
                     {/* Stats Row */}
                     <View className="flex-row w-full justify-between mt-8 bg-surface p-6 rounded-2xl border border-border">
                         <View className="items-center flex-1 border-r border-border">
-                            <Text className="text-xl font-bold text-foreground">12</Text>
+                            <Text className="text-xl font-bold text-foreground">
+                                {loading ? '-' : (profile?.stats.jobsCount || 0)}
+                            </Text>
                             <Text className="text-xs text-muted-foreground mt-1">Active Jobs</Text>
                         </View>
                         <View className="items-center flex-1 border-r border-border">
-                            <Text className="text-xl font-bold text-foreground">48</Text>
+                            <Text className="text-xl font-bold text-foreground">
+                                {loading ? '-' : (profile?.stats.notesCount || 0)}
+                            </Text>
                             <Text className="text-xs text-muted-foreground mt-1">Field Notes</Text>
                         </View>
                          <View className="items-center flex-1">
-                            <Text className="text-xl font-bold text-foreground">5.0</Text>
+                            <Text className="text-xl font-bold text-foreground">
+                                {loading ? '-' : (profile?.stats.rating?.toFixed(1) || '5.0')}
+                            </Text>
                             <Text className="text-xs text-muted-foreground mt-1">Rating</Text>
                         </View>
                     </View>

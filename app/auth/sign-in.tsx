@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -44,16 +44,9 @@ export default function SignIn() {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}>
-          <View className="items-center mb-10">
-            <View className="shadow-sm mb-6">
-                 <Image 
-                    source={require('../../assets/images/BigLogic AI Logo Design.png')} 
-                    style={{ width: 64, height: 64, borderRadius: 16 }}
-                    resizeMode="contain"
-                 />
-            </View>
-            <Text className="text-3xl font-bold text-foreground mb-2 text-gradient">Welcome Back</Text>
-            <Text className="text-muted-foreground text-base text-center">Sign in to continue to your field notes</Text>
+          <View className="items-start mb-10 w-full">
+            <Text className="text-4xl font-bold text-white mb-1">BigLogic AI</Text>
+            <Text className="text-gray-400 text-lg">Field Notes System</Text>
           </View>
 
           <View className="w-full">

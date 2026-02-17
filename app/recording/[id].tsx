@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RecordingMetadata, storageService } from '../../services/storage';
 import { theme, Colors } from '../../constants/theme';
 import { StatusBar } from 'expo-status-bar';
+import { AskJobModal } from '@/components/AskJobModal';
 
 export default function RecordingDetails() {
     const { id } = useLocalSearchParams();
@@ -23,6 +24,9 @@ export default function RecordingDetails() {
     
     // History State
     const [historyVisible, setHistoryVisible] = useState(false);
+
+    // Ask Job State
+    const [askJobVisible, setAskJobVisible] = useState(false);
 
     useEffect(() => {
         loadRecording();
@@ -213,9 +217,14 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                     <Text className="text-lg font-bold text-foreground">{recording.jobId}</Text>
                     {approval?.status === 'approved' && <Text className="text-[10px] text-success font-bold uppercase mt-0.5">Approved</Text>}
                 </View>
-                <TouchableOpacity onPress={() => setMenuVisible(true)} className="p-2 -mr-2 rounded-full active:bg-secondary">
-                    <Ionicons name="ellipsis-vertical" size={24} color={Colors.accent} />
-                </TouchableOpacity>
+                <View className="flex-row items-center -mr-2">
+                    <TouchableOpacity onPress={() => setAskJobVisible(true)} className="p-2 rounded-full active:bg-secondary mr-1">
+                        <Ionicons name="sparkles" size={20} color={theme.colors.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setMenuVisible(true)} className="p-2 rounded-full active:bg-secondary">
+                        <Ionicons name="ellipsis-vertical" size={24} color={Colors.accent} />
+                    </TouchableOpacity>
+                </View>
              </View>
 
              {!analysis ? (
@@ -551,6 +560,12 @@ ${analysis.actionItems?.otherParties?.map(i => `- ${i}`).join('\n') || 'None'}
                     </View>
                 </View>
             </Modal>
+
+            <AskJobModal 
+                visible={askJobVisible} 
+                onClose={() => setAskJobVisible(false)} 
+                jobId={recording.jobId} 
+            />
         </SafeAreaView>
     );
 }
